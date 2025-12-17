@@ -104,9 +104,33 @@ while cap.isOpened():
             angles, mtxR, mtxQ, Qx, Qy, Qz = cv2.RQDecomp3x3(rmat)
 
             # Conversione angoli
-            x = angles[0] * 360
-            y = angles[1] * 360
-            z = angles[2] * 360 
+            # Conversione angoli
+            #ATTUALMENTE X E Z SONO INVERTITI... DA AGGIUSTARE
+            # --- X CHANNEL (Pitch) ---
+            # Aggiungiamo 180 perché spesso il modello è capovolto sull'asse X
+            raw_x = angles[0]
+            x = raw_x + 180
+            if x > 180:
+                x -= 360
+            
+            # --- Y CHANNEL (Yaw) ---
+            # Solitamente non serve offset, ma se salta a 360 applichiamo il wrap
+            y = angles[1]
+            if y > 180:
+                y -= 360
+            elif y < -180: # Sicurezza extra per il lato opposto
+                y += 360
+
+            # --- Z CHANNEL (Roll) ---
+            # Applichiamo la stessa logica di "Wrap" per evitare il salto 0->360
+            z = angles[2]
+            
+            # Se la rotazione supera 180 (es. 350 gradi), sottraiamo 360 per ottenere -10
+            if z > 180:
+                z -= 360
+            # Se la rotazione è troppo negativa (es. -190), aggiungiamo 360 (raro ma utile)
+            elif z < -180:
+                z += 360
 
             # --- INVIO OSC ---
             # Invio i dati arrotondati a 2 decimali per pulizia
