@@ -4,4 +4,5 @@ Brain\ Viewer abstract.pdf
 3D_model/brain.glb
 3D_model/brain.obj
 3D_model/OSC_listener.toe
+3D_model/*
 .DS_Store
